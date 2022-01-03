@@ -1,0 +1,37 @@
+name: Linux
+
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: sudo apt update && sudo apt install -y libssh2-1-dev libssl-dev
+      - name: Setup containers
+        run: docker-compose -f "tests/docker-compose.yml" up -d --build
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          components: rustfmt, clippy
+      - name: Build
+        run: cargo build --all-features
+      - name: Build (unsecure)
+        run: cargo build --no-default-features
+      - name: Run tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --no-default-features --features find,github-actions,with-containers --no-fail-fast
+        env:
+          RUST_LOG: trace
+      - name: Format
+        run: cargo fmt --all -- --check
+      - name: Clippy
+        run: cargo clippy --features find -- -Dwarnings
