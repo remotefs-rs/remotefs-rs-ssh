@@ -245,7 +245,7 @@ fn session_auth_with_password(
 // -- shell commands
 
 /// Perform shell command in current SSH session
-pub fn perform_shell_cmd<S: AsRef<str>>(session: &mut Session, cmd: S) -> RemoteResult<String> {
+pub fn perform_shell_cmd<S: AsRef<str>>(session: &Session, cmd: S) -> RemoteResult<String> {
     // Create channel
     trace!("Running command: {}", cmd.as_ref());
     let mut channel = match session.channel_session() {
@@ -282,7 +282,7 @@ pub fn perform_shell_cmd<S: AsRef<str>>(session: &mut Session, cmd: S) -> Remote
 
 /// Perform shell command at specified path and return exit code and output
 pub fn perform_shell_cmd_at_with_rc<S: AsRef<str>>(
-    session: &mut Session,
+    session: &Session,
     cmd: S,
     p: &Path,
 ) -> RemoteResult<(u32, String)> {
@@ -291,7 +291,7 @@ pub fn perform_shell_cmd_at_with_rc<S: AsRef<str>>(
 
 /// Perform shell command and collect return code and output
 pub fn perform_shell_cmd_with_rc<S: AsRef<str>>(
-    session: &mut Session,
+    session: &Session,
     cmd: S,
 ) -> RemoteResult<(u32, String)> {
     let output = perform_shell_cmd(session, format!("{}; echo $?", cmd.as_ref()))?;
