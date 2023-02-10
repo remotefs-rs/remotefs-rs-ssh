@@ -1,11 +1,19 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [0.1.3](#013)
   - [0.1.2](#012)
   - [0.1.1](#011)
   - [0.1.0](#010)
 
 ---
+
+## 0.1.3
+
+Released on 10/02/2023
+
+- Fixed client using ssh2 config parameter `HostName` to resolve configuration parameters.
+- Bump `ssh2-config` to `0.1.4`
 
 ## 0.1.2
 
