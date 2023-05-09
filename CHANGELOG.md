@@ -1,6 +1,7 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [0.2.0](#020)
   - [0.1.6](#016)
   - [0.1.5](#015)
   - [0.1.3](#013)
@@ -9,6 +10,12 @@
   - [0.1.0](#010)
 
 ---
+
+## 0.2.0
+
+Released on 09/05/2023
+
+- `SshOpts::config_file` now requires `SshConfigParseRule` as argument to specify the rules to parse the configuration file
 
 ## 0.1.6
 
