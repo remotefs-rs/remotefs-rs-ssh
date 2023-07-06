@@ -1,6 +1,7 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [0.2.1](#021)
   - [0.2.0](#020)
   - [0.1.6](#016)
   - [0.1.5](#015)
@@ -10,6 +11,12 @@
   - [0.1.0](#010)
 
 ---
+
+## 0.2.1
+
+Released on 06/07/2023
+
+- If ssh configuration timeout is `0`, don't set connection timeout
 
 ## 0.2.0
 
