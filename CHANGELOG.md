@@ -12,6 +12,12 @@
 
 ---
 
+## 0.2.2
+
+Released on 03/05/2024
+
+- `SshOpts::method` now requires `KeyMethod` and `MethodType` to setup key method
+
 ## 0.2.1
 
 Released on 06/07/2023
