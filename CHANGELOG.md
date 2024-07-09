@@ -18,6 +18,7 @@
 Released on 09/07/2024
 
 - Fix: resolved_host from configuration wasn't used to connect
+- `SshOpts::method` now requires `KeyMethod` and `MethodType` to setup key method
 
 ## 0.2.1
 
