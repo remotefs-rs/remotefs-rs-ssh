@@ -19,6 +19,8 @@ Released on 09/07/2024
 
 - Fix: resolved_host from configuration wasn't used to connect
 - `SshOpts::method` now requires `KeyMethod` and `MethodType` to setup key method
+- Feat: Implemented `SshAgentIdentity` to specify the ssh agent configuration to be used to authenticate.
+  - use `SshOpts.ssh_agent_identity()` to set the option
 
 ## 0.2.1
 
