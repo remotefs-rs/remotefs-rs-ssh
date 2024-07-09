@@ -1,6 +1,7 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [0.3.0](#030)
   - [0.2.1](#021)
   - [0.2.0](#020)
   - [0.1.6](#016)
@@ -12,10 +13,11 @@
 
 ---
 
-## 0.2.2
+## 0.3.0
 
-Released on 03/05/2024
+Released on 09/07/2024
 
+- Fix: resolved_host from configuration wasn't used to connect
 - `SshOpts::method` now requires `KeyMethod` and `MethodType` to setup key method
 
 ## 0.2.1
