@@ -74,7 +74,7 @@ Always mind that your suggestion, may be rejected: I'll always provide a feedbac
 
 At the moment, these kind of contributions are more appreciated and should be preferred:
 
-- Fix for issues described in [Known Issues](./README.md#known-issues-) or [issues reported by the community](https://github.com/veeso/remotefs/issues)
+- Fix for issues described in [Known Issues](./README.md#known-issues-) or [issues reported by the community](https://github.com/remotefs-rs/remotefs/issues)
 - New file transfers: for further details see [Implementing File Transfer](#implementing-file-transfers)
 - Code optimizations: any optimization to the code is welcome
 
