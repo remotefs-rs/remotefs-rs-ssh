@@ -1,6 +1,7 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [0.6.0](#060)
   - [0.5.0](#050)
   - [0.4.1](#041)
   - [0.4.0](#040)
@@ -17,9 +18,16 @@
 
 ---
 
+## 0.6.0
+
+Released on 15/03/2025
+
+- bump `ssh2-config` to `0.4.0`
+- edition `2024`
+
 ## 0.5.0
 
-Released on 26/102/2024
+Released on 26/10/2024
 
 - `SshKeyStorage` must be `Sync` and `Send`
 
