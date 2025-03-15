@@ -13,8 +13,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install dependencies
         run: sudo apt update && sudo apt install -y libssh2-1-dev libssl-dev
-      - name: Setup containers
-        run: docker compose -f "tests/docker-compose.yml" up -d --build
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable

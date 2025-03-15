@@ -109,15 +109,7 @@ In addition to the process described for the PRs, I've also decided to introduce
 
 ## Run test units
 
-In case you want to test the aws s3 client, you need to follow these steps:
-
-1. Run containers
-
-    ```sh
-    docker-compose -f "tests/docker-compose.yml" up -d --build
-    ```
-
-2. Run tests with `cargo test --features with-containers`
+Run tests with `cargo test `
 
 ---
 
