@@ -1,6 +1,7 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [0.6.2](#062)
   - [0.6.1](#061)
   - [0.6.0](#060)
   - [0.5.0](#050)
@@ -18,6 +19,12 @@
   - [0.1.0](#010)
 
 ---
+
+## 0.6.2
+
+Released on 16/05/2025
+
+- [Issue 9](https://github.com/remotefs-rs/remotefs-rs-ssh/pull/9): fixed label regex groups and add support for parsing ls output on systems that include SELinux labels, POSIX ACLs, and extended attributes
 
 ## 0.6.1
 
