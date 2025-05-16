@@ -119,15 +119,9 @@ impl ScpFs {
                     Err(_) => SystemTime::UNIX_EPOCH,
                 };
                 // Get uid
-                let uid: Option<u32> = match metadata["uid"].parse::<u32>() {
-                    Ok(uid) => Some(uid),
-                    Err(_) => None,
-                };
+                let uid: Option<u32> = metadata["uid"].parse::<u32>().ok();
                 // Get gid
-                let gid: Option<u32> = match metadata["gid"].parse::<u32>() {
-                    Ok(gid) => Some(gid),
-                    Err(_) => None,
-                };
+                let gid: Option<u32> = metadata["gid"].parse::<u32>().ok();
                 // Get filesize
                 let size = metadata["size"].parse::<u64>().unwrap_or(0);
                 // Get link and name
