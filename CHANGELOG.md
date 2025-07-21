@@ -1,6 +1,7 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [0.6.3](#063)
   - [0.6.2](#062)
   - [0.6.1](#061)
   - [0.6.0](#060)
@@ -19,6 +20,13 @@
   - [0.1.0](#010)
 
 ---
+
+## 0.6.3
+
+Released on 21/07/2025
+
+- Fixed issue with SSH authentication:
+  - if the key is resolved and it fails to authenticate, if a password is provided, try to authenticate with the password before returning an error.
 
 ## 0.6.2
 
