@@ -2,6 +2,7 @@
 //! to support different SSH libraries (e.g. libssh2, libssh)
 
 #[cfg(feature = "libssh2")]
+#[cfg_attr(docsrs, doc(cfg(feature = "libssh2")))]
 mod libssh2;
 
 use std::io::{Read, Write};
@@ -11,6 +12,7 @@ use remotefs::fs::{Metadata, ReadStream, WriteStream};
 use remotefs::{File, RemoteResult};
 
 #[cfg(feature = "libssh2")]
+#[cfg_attr(docsrs, doc(cfg(feature = "libssh2")))]
 pub use self::libssh2::LibSsh2Session;
 use crate::SshOpts;
 

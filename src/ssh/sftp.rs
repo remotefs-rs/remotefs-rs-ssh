@@ -28,6 +28,7 @@ where
 }
 
 #[cfg(feature = "libssh2")]
+#[cfg_attr(docsrs, doc(cfg(feature = "libssh2")))]
 impl SftpFs<super::backend::LibSsh2Session> {
     /// Constructs a new [`SftpFs`] instance with the `libssh2` backend.
     pub fn libssh2(opts: SshOpts) -> Self {

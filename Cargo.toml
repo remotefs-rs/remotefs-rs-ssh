@@ -22,6 +22,7 @@ ssh2-config = "^0.6"
 ssh2 = { version = "^0.9", optional = true }
 
 [dev-dependencies]
+criterion = "0.7"
 env_logger = "^0.11"
 pretty_assertions = "^1"
 rand = "^0.9"
@@ -38,3 +39,11 @@ no-log = ["log/max_level_off"]
 [target."cfg(target_os = \"windows\")"]
 [target."cfg(target_os = \"windows\")".dependencies]
 path-slash = "^0.2.1"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[[bench]]
+name = "libssh2"
+harness = false
