@@ -1,6 +1,7 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [0.7.0](#070)
   - [0.6.4](#064)
   - [0.6.3](#063)
   - [0.6.2](#062)
@@ -21,6 +22,17 @@
   - [0.1.0](#010)
 
 ---
+
+## 0.7.0
+
+Released on 16/08/2025
+
+- **BREAKING**: Support for multiple SSH backends:
+  - Added new feature to enable **libssh2** backend:
+    - Use `libssh2` feature to enable the backend
+    - Use `libssh2-vendored` to build the backend with vendored libssh2
+  - Removed `new`; use `libssh2` and `libssh` constructors instead.
+  - Removed `From<SshOpts>`
 
 ## 0.6.4
 

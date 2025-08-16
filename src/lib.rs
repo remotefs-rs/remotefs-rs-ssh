@@ -66,7 +66,7 @@ extern crate log;
 mod ssh;
 pub use ssh::{
     KeyMethod, MethodType, ParseRule as SshConfigParseRule, ScpFs, SftpFs, SshAgentIdentity,
-    SshKeyStorage, SshOpts,
+    SshKeyStorage, SshOpts, SshSession,
 };
 
 // -- utils
