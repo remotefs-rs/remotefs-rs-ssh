@@ -25,7 +25,7 @@
 
 ## 0.7.0
 
-Released on 16/08/2025
+Released on 01/09/2025
 
 - **BREAKING**: Support for multiple SSH backends:
   - Added new feature to enable **libssh2** backend:
