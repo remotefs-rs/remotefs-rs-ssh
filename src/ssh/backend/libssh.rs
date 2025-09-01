@@ -11,6 +11,7 @@ use remotefs::{File, RemoteError, RemoteErrorType, RemoteResult};
 use super::SshSession;
 use crate::SshOpts;
 use crate::ssh::backend::Sftp;
+use crate::ssh::config::Config;
 
 /// An implementation of [`SshSession`] using libssh as the backend.
 ///
@@ -29,11 +30,24 @@ pub struct LibSshSftp {
 /// A wrapper around [`libssh_rs::Channel`] to provide a SCP recv channel for [`LibSshSession`]
 struct ScpRecvChannel {
     channel: libssh_rs::Channel,
+    /// We must keep track of the total file size
+    /// otherwise read will hang
+    filesize: usize,
+    read: usize,
 }
 
 impl Read for ScpRecvChannel {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        self.channel.stdout().read(buf)
+        if self.read >= self.filesize {
+            return Ok(0);
+        }
+
+        // read up to
+        let max_read = self.filesize - self.read;
+        let res = self.channel.stdout().read(&mut buf[..max_read])?;
+
+        self.read += res;
+        Ok(res)
     }
 }
 
@@ -108,6 +122,14 @@ impl SshSession for LibSshSession {
         session
             .options_parse_config(config_file_str.as_deref())
             .map_err(|e| RemoteError::new_ex(RemoteErrorType::ConnectionError, e))?;
+
+        // set methods
+        for opt in opts.methods.iter().filter_map(|method| method.ssh_opts()) {
+            debug!("Setting SSH option: {opt:?}");
+            session
+                .set_option(opt)
+                .map_err(|e| RemoteError::new_ex(RemoteErrorType::ConnectionError, e))?;
+        }
 
         // Open connection and initialize handshake
         if let Err(err) = session.connect() {
@@ -229,7 +251,11 @@ impl SshSession for LibSshSession {
         })?;
 
         debug!("Creating SCP recv channel");
-        let reader = ScpRecvChannel { channel };
+        let reader = ScpRecvChannel {
+            channel,
+            filesize,
+            read: 0,
+        };
 
         Ok(Box::new(reader) as Box<dyn Read + Send>)
     }
@@ -387,6 +413,8 @@ impl Sftp for LibSshSftp {
             }
         };
 
+        //panic!("Figa");
+
         self.inner
             .open(conv_path_to_str(path), flags, mode as u32)
             .map(|file| WriteStream::from(Box::new(SftpFileWriter(file)) as Box<dyn WriteAndSeek>))
@@ -410,6 +438,9 @@ impl Sftp for LibSshSftp {
             .map(|files| {
                 files
                     .into_iter()
+                    .filter(|metadata| {
+                        metadata.name() != Some(".") && metadata.name() != Some("..")
+                    })
                     .map(|metadata| {
                         self.make_fsentry(MakePath::Directory(dirname.as_ref()), metadata)
                     })
@@ -608,8 +639,29 @@ impl LibSshSftp {
 }
 
 fn authenticate(session: &mut libssh_rs::Session, opts: &SshOpts) -> RemoteResult<()> {
+    // parse configuration
+    let ssh_config = Config::try_from(opts)?;
+    let username = ssh_config.username.clone();
+
+    debug!("Authenticating to {}", opts.host);
+    session
+        .set_option(SshOption::User(Some(username)))
+        .map_err(|e| {
+            RemoteError::new_ex(
+                RemoteErrorType::AuthenticationFailed,
+                format!("Failed to set username: {e}"),
+            )
+        })?;
+
+    debug!("Trying with userauth_none");
     match session.userauth_none(opts.username.as_deref()) {
-        Ok(_) => return Ok(()),
+        Ok(AuthStatus::Success) => {
+            debug!("Authenticated with userauth_none");
+            return Ok(());
+        }
+        Ok(status) => {
+            debug!("userauth_none returned status: {status:?}");
+        }
         Err(err) => {
             debug!("userauth_none failed: {err}");
         }
@@ -623,13 +675,21 @@ fn authenticate(session: &mut libssh_rs::Session, opts: &SshOpts) -> RemoteResul
     if auth_methods.contains(AuthMethods::PUBLIC_KEY) {
         debug!("Trying public key authentication");
         // try with known key to config
-        if session.userauth_public_key_auto(None, None) == Ok(AuthStatus::Success) {
-            debug!("Authenticated with public key");
-            return Ok(());
+        match session.userauth_public_key_auto(None, None) {
+            Ok(AuthStatus::Success) => {
+                debug!("Authenticated with public key");
+                return Ok(());
+            }
+            Ok(status) => {
+                debug!("userauth_public_key_auto returned status: {status:?}");
+            }
+            Err(err) => {
+                debug!("userauth_public_key_auto failed: {err}");
+            }
         }
 
         // try with storage
-        match key_storage_auth(session, opts) {
+        match key_storage_auth(session, opts, &ssh_config) {
             Ok(()) => {
                 debug!("Authenticated with public key from storage");
                 return Ok(());
@@ -642,21 +702,33 @@ fn authenticate(session: &mut libssh_rs::Session, opts: &SshOpts) -> RemoteResul
 
     if auth_methods.contains(AuthMethods::PASSWORD) {
         debug!("Trying password authentication");
-        if session.userauth_password(opts.username.as_deref(), opts.password.as_deref())
-            == Ok(AuthStatus::Success)
-        {
-            debug!("Authenticated with password");
-            return Ok(());
+
+        // NOTE: you cannot pass password None. It causes SEGFAULT
+        match session.userauth_password(None, Some(opts.password.as_deref().unwrap_or_default())) {
+            Ok(AuthStatus::Success) => {
+                debug!("Authenticated with password");
+                return Ok(());
+            }
+            Ok(status) => {
+                debug!("userauth_password returned status: {status:?}");
+            }
+            Err(err) => {
+                debug!("userauth_password failed: {err}");
+            }
         }
     }
 
     Err(RemoteError::new_ex(
         RemoteErrorType::AuthenticationFailed,
-        "no supported authentication method found",
+        "all authentication methods failed",
     ))
 }
 
-fn key_storage_auth(session: &mut libssh_rs::Session, opts: &SshOpts) -> RemoteResult<()> {
+fn key_storage_auth(
+    session: &mut libssh_rs::Session,
+    opts: &SshOpts,
+    ssh_config: &Config,
+) -> RemoteResult<()> {
     let Some(key_storage) = &opts.key_storage else {
         return Err(RemoteError::new_ex(
             RemoteErrorType::AuthenticationFailed,
@@ -664,8 +736,12 @@ fn key_storage_auth(session: &mut libssh_rs::Session, opts: &SshOpts) -> RemoteR
         ));
     };
 
-    let Some(priv_key_path) =
-        key_storage.resolve(&opts.host, opts.username.as_deref().unwrap_or_default())
+    let Some(priv_key_path) = key_storage
+        .resolve(&ssh_config.host, &ssh_config.username)
+        .or(key_storage.resolve(
+            ssh_config.resolved_host.as_str(),
+            ssh_config.username.as_str(),
+        ))
     else {
         return Err(RemoteError::new_ex(
             RemoteErrorType::AuthenticationFailed,
@@ -755,7 +831,7 @@ fn perform_shell_cmd<S: AsRef<str>>(
 }
 
 /// Read filesize from scp header
-fn parse_scp_header_filesize(header: &[u8]) -> RemoteResult<u64> {
+fn parse_scp_header_filesize(header: &[u8]) -> RemoteResult<usize> {
     // Header format: C<mode> <size> <filename>\n
     let header_str = std::str::from_utf8(header).map_err(|e| {
         RemoteError::new_ex(
@@ -776,7 +852,7 @@ fn parse_scp_header_filesize(header: &[u8]) -> RemoteResult<u64> {
             "Invalid SCP header: missing 'C'",
         ));
     }
-    let size = parts[1].parse::<u64>().map_err(|e| {
+    let size = parts[1].parse::<usize>().map_err(|e| {
         RemoteError::new_ex(
             RemoteErrorType::ProtocolError,
             format!("Invalid file size: {e}"),
@@ -791,22 +867,16 @@ fn wait_for_ack(channel: &libssh_rs::Channel) -> RemoteResult<()> {
     debug!("Waiting for channel acknowledgment");
     // read ACK
     let mut ack = [0u8; 1024];
-    channel.stdout().read(&mut ack).map_err(|err| {
+    let n = channel.stdout().read(&mut ack).map_err(|err| {
         RemoteError::new_ex(
             RemoteErrorType::ProtocolError,
             format!("Could not read from channel: {err}"),
         )
     })?;
-    let ack = std::str::from_utf8(&ack).map_err(|err| {
-        RemoteError::new_ex(
-            RemoteErrorType::ProtocolError,
-            format!("Could not parse ACK: {err}"),
-        )
-    })?;
-    if ack != "0" {
+    if n == 1 && ack[0] != 0 {
         Err(RemoteError::new_ex(
             RemoteErrorType::ProtocolError,
-            format!("Unexpected ACK: {ack}"),
+            format!("Unexpected ACK: {ack:?} (read {n} bytes)"),
         ))
     } else {
         Ok(())

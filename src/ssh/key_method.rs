@@ -1,6 +1,3 @@
-#[cfg(feature = "libssh2")]
-use ssh2::MethodType as Ssh2MethodType;
-
 /// [`KeyMethod`] method type for SSH key exchange.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum MethodType {
@@ -18,39 +15,39 @@ pub enum MethodType {
 }
 
 #[cfg(feature = "libssh2")]
-impl From<MethodType> for Ssh2MethodType {
+impl From<MethodType> for ssh2::MethodType {
     fn from(t: MethodType) -> Self {
         match t {
-            MethodType::Kex => Ssh2MethodType::Kex,
-            MethodType::HostKey => Ssh2MethodType::HostKey,
-            MethodType::CryptClientServer => Ssh2MethodType::CryptCs,
-            MethodType::CryptServerClient => Ssh2MethodType::CryptSc,
-            MethodType::MacClientServer => Ssh2MethodType::MacCs,
-            MethodType::MacServerClient => Ssh2MethodType::MacSc,
-            MethodType::CompClientServer => Ssh2MethodType::CompCs,
-            MethodType::CompServerClient => Ssh2MethodType::CompSc,
-            MethodType::LangClientServer => Ssh2MethodType::LangCs,
-            MethodType::LangServerClient => Ssh2MethodType::LangSc,
-            MethodType::SignAlgo => Ssh2MethodType::SignAlgo,
+            MethodType::Kex => ssh2::MethodType::Kex,
+            MethodType::HostKey => ssh2::MethodType::HostKey,
+            MethodType::CryptClientServer => ssh2::MethodType::CryptCs,
+            MethodType::CryptServerClient => ssh2::MethodType::CryptSc,
+            MethodType::MacClientServer => ssh2::MethodType::MacCs,
+            MethodType::MacServerClient => ssh2::MethodType::MacSc,
+            MethodType::CompClientServer => ssh2::MethodType::CompCs,
+            MethodType::CompServerClient => ssh2::MethodType::CompSc,
+            MethodType::LangClientServer => ssh2::MethodType::LangCs,
+            MethodType::LangServerClient => ssh2::MethodType::LangSc,
+            MethodType::SignAlgo => ssh2::MethodType::SignAlgo,
         }
     }
 }
 
 #[cfg(feature = "libssh2")]
-impl From<Ssh2MethodType> for MethodType {
-    fn from(t: Ssh2MethodType) -> Self {
+impl From<ssh2::MethodType> for MethodType {
+    fn from(t: ssh2::MethodType) -> Self {
         match t {
-            Ssh2MethodType::Kex => MethodType::Kex,
-            Ssh2MethodType::HostKey => MethodType::HostKey,
-            Ssh2MethodType::CryptCs => MethodType::CryptClientServer,
-            Ssh2MethodType::CryptSc => MethodType::CryptServerClient,
-            Ssh2MethodType::MacCs => MethodType::MacClientServer,
-            Ssh2MethodType::MacSc => MethodType::MacServerClient,
-            Ssh2MethodType::CompCs => MethodType::CompClientServer,
-            Ssh2MethodType::CompSc => MethodType::CompServerClient,
-            Ssh2MethodType::LangCs => MethodType::LangClientServer,
-            Ssh2MethodType::LangSc => MethodType::LangServerClient,
-            Ssh2MethodType::SignAlgo => MethodType::SignAlgo,
+            ssh2::MethodType::Kex => MethodType::Kex,
+            ssh2::MethodType::HostKey => MethodType::HostKey,
+            ssh2::MethodType::CryptCs => MethodType::CryptClientServer,
+            ssh2::MethodType::CryptSc => MethodType::CryptServerClient,
+            ssh2::MethodType::MacCs => MethodType::MacClientServer,
+            ssh2::MethodType::MacSc => MethodType::MacServerClient,
+            ssh2::MethodType::CompCs => MethodType::CompClientServer,
+            ssh2::MethodType::CompSc => MethodType::CompServerClient,
+            ssh2::MethodType::LangCs => MethodType::LangClientServer,
+            ssh2::MethodType::LangSc => MethodType::LangServerClient,
+            ssh2::MethodType::SignAlgo => MethodType::SignAlgo,
         }
     }
 }
@@ -75,11 +72,30 @@ impl KeyMethod {
     pub(crate) fn prefs(&self) -> String {
         self.algos.join(",")
     }
+
+    #[cfg(feature = "libssh")]
+    pub fn ssh_opts(&self) -> Option<libssh_rs::SshOption> {
+        let values = self.algos.join(",");
+
+        match self.method_type {
+            MethodType::Kex => Some(libssh_rs::SshOption::KeyExchange(values)),
+            MethodType::HostKey => Some(libssh_rs::SshOption::HostKeys(values)),
+            MethodType::CryptClientServer => Some(libssh_rs::SshOption::CiphersCS(values)),
+            MethodType::CryptServerClient => Some(libssh_rs::SshOption::CiphersSC(values)),
+            MethodType::MacClientServer => Some(libssh_rs::SshOption::HmacCS(values)),
+            MethodType::MacServerClient => Some(libssh_rs::SshOption::HmacSC(values)),
+            _ => None,
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
 
+    #[cfg(feature = "libssh2")]
+    use ssh2::MethodType as Ssh2MethodType;
+
+    #[cfg(feature = "libssh2")]
     use super::*;
 
     #[test]

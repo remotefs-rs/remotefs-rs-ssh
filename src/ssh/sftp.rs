@@ -87,7 +87,12 @@ where
 {
     fn connect(&mut self) -> RemoteResult<Welcome> {
         debug!("Initializing SFTP connection...");
-        let session = S::connect(&self.opts)?;
+        let mut session = S::connect(&self.opts)?;
+        // Get working directory
+        debug!("Getting working directory...");
+        self.wrkdir = session
+            .cmd("pwd")
+            .map(|(_rc, output)| PathBuf::from(output.as_str().trim()))?;
         // Get Sftp client
         debug!("Getting SFTP client...");
         let sftp = match session.sftp() {
@@ -96,12 +101,6 @@ where
                 error!("Could not get sftp client: {err}");
                 return Err(RemoteError::new_ex(RemoteErrorType::ProtocolError, err));
             }
-        };
-        // Get working directory
-        debug!("Getting working directory...");
-        self.wrkdir = match sftp.realpath(Path::new(".")) {
-            Ok(p) => p,
-            Err(err) => return Err(RemoteError::new_ex(RemoteErrorType::ProtocolError, err)),
         };
         self.session = Some(session);
         self.sftp = Some(sftp);
@@ -117,12 +116,13 @@ where
     fn disconnect(&mut self) -> RemoteResult<()> {
         debug!("Disconnecting from remote...");
         if let Some(session) = self.session.as_ref() {
+            // First free sftp
+            self.sftp = None;
             // Disconnect (greet server with 'Mandi' as they do in Friuli)
             match session.disconnect() {
                 Ok(_) => {
                     // Set session and sftp to none
                     self.session = None;
-                    self.sftp = None;
                     Ok(())
                 }
                 Err(err) => Err(RemoteError::new_ex(RemoteErrorType::ConnectionError, err)),
@@ -237,6 +237,25 @@ where
             })
         } else {
             Err(RemoteError::new(RemoteErrorType::NotConnected))
+        }
+    }
+
+    fn remove_dir_all(&mut self, path: &Path) -> RemoteResult<()> {
+        self.check_connection()?;
+        let path = path_utils::absolutize(self.wrkdir.as_path(), path);
+        if !self.exists(path.as_path()).ok().unwrap_or(false) {
+            return Err(RemoteError::new(RemoteErrorType::NoSuchFileOrDirectory));
+        }
+        debug!("Removing directory {} recursively", path.display());
+        match self
+            .session
+            .as_mut()
+            .unwrap()
+            .cmd(format!("rm -rf \"{}\"", path.display()))
+        {
+            Ok((0, _)) => Ok(()),
+            Ok(_) => Err(RemoteError::new(RemoteErrorType::CouldNotRemoveFile)),
+            Err(err) => Err(RemoteError::new_ex(RemoteErrorType::ProtocolError, err)),
         }
     }
 
@@ -402,8 +421,8 @@ where
             trace!("Opened remote file");
             let mut bytes: usize = 0;
             let transfer_size = metadata.size as usize;
+            let mut buffer: [u8; 65535] = [0; 65535];
             while bytes < transfer_size {
-                let mut buffer: [u8; 65535] = [0; 65535];
                 let bytes_read = reader.read(&mut buffer).map_err(|e| {
                     error!("Failed to read from file: {e}",);
                     RemoteError::new_ex(RemoteErrorType::IoError, e)
@@ -436,8 +455,8 @@ where
             trace!("Opened remote file");
             let mut bytes: usize = 0;
             let transfer_size = metadata.size as usize;
+            let mut buffer: [u8; 65535] = [0; 65535];
             while bytes < transfer_size {
-                let mut buffer: [u8; 65535] = [0; 65535];
                 let bytes_read = reader.read(&mut buffer).map_err(|e| {
                     error!("Failed to read from file: {e}",);
                     RemoteError::new_ex(RemoteErrorType::IoError, e)
@@ -469,8 +488,8 @@ where
             let mut stream = self.open(src)?;
             trace!("File opened");
             let mut bytes: usize = 0;
+            let mut buffer: [u8; 65535] = [0; 65535];
             while bytes < transfer_size {
-                let mut buffer: [u8; 65535] = [0; 65535];
                 let bytes_read = stream.read(&mut buffer).map_err(|e| {
                     error!("Failed to read from stream: {e}");
                     RemoteError::new_ex(RemoteErrorType::IoError, e)

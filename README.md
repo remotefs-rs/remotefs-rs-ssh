@@ -95,6 +95,9 @@ Each backend can be built with the vendored version, using the vendored feature 
 
 If the vendored feature is **NOT** provided, you will need to have the corresponding system libraries installed on your machine.
 
+> ![NOTE]
+> If you need SftpFs to be `Sync` YOU MUST use libssh2.
+
 ### Other features
 
 these features are supported:
