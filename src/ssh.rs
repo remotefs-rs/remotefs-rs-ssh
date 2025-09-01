@@ -199,6 +199,34 @@ impl SshOpts {
     }
 }
 
+#[cfg(feature = "libssh")]
+impl From<SshOpts> for SftpFs<LibSshSession> {
+    fn from(opts: SshOpts) -> Self {
+        Self::libssh(opts)
+    }
+}
+
+#[cfg(feature = "libssh")]
+impl From<SshOpts> for ScpFs<LibSshSession> {
+    fn from(opts: SshOpts) -> Self {
+        Self::libssh(opts)
+    }
+}
+
+#[cfg(feature = "libssh2")]
+impl From<SshOpts> for SftpFs<LibSsh2Session> {
+    fn from(opts: SshOpts) -> Self {
+        Self::libssh2(opts)
+    }
+}
+
+#[cfg(feature = "libssh2")]
+impl From<SshOpts> for ScpFs<LibSsh2Session> {
+    fn from(opts: SshOpts) -> Self {
+        Self::libssh2(opts)
+    }
+}
+
 #[cfg(test)]
 mod test {
 

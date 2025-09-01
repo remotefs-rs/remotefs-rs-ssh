@@ -31,8 +31,10 @@ Released on 16/08/2025
   - Added new feature to enable **libssh2** backend:
     - Use `libssh2` feature to enable the backend
     - Use `libssh2-vendored` to build the backend with vendored libssh2
+  - Added support for [libssh](https://www.libssh.org/) backend
+    - Use `libssh` feature to enable the backend
+    - Use `libssh-vendored` to build the backend with vendored libssh
   - Removed `new`; use `libssh2` and `libssh` constructors instead.
-  - Removed `From<SshOpts>`
 
 ## 0.6.4
 
