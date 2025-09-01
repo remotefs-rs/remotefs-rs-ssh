@@ -532,10 +532,7 @@ impl LibSsh2Sftp {
     }
 }
 
-pub fn perform_shell_cmd<S: AsRef<str>>(
-    session: &mut ssh2::Session,
-    cmd: S,
-) -> RemoteResult<String> {
+fn perform_shell_cmd<S: AsRef<str>>(session: &mut ssh2::Session, cmd: S) -> RemoteResult<String> {
     // Create channel
     trace!("Running command: {}", cmd.as_ref());
     let mut channel = match session.channel_session() {

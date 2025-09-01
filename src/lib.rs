@@ -85,6 +85,10 @@ extern crate lazy_regex;
 #[macro_use]
 extern crate log;
 
+// compile error if no backend is chosen
+#[cfg(not(any(feature = "libssh2", feature = "libssh")))]
+compile_error!("No SSH backend chosen. Please enable either `libssh2` or `libssh` feature.");
+
 mod ssh;
 pub use ssh::{
     KeyMethod, MethodType, ParseRule as SshConfigParseRule, ScpFs, SftpFs, SshAgentIdentity,
@@ -94,6 +98,9 @@ pub use ssh::{
 #[cfg(feature = "libssh2")]
 #[cfg_attr(docsrs, doc(cfg(feature = "libssh2")))]
 pub use self::ssh::LibSsh2Session;
+#[cfg(feature = "libssh")]
+#[cfg_attr(docsrs, doc(cfg(feature = "libssh")))]
+pub use self::ssh::LibSshSession;
 
 // -- utils
 pub(crate) mod utils;

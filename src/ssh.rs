@@ -20,6 +20,9 @@ pub use ssh2_config::ParseRule;
 #[cfg(feature = "libssh2")]
 #[cfg_attr(docsrs, doc(cfg(feature = "libssh2")))]
 pub use self::backend::LibSsh2Session;
+#[cfg(feature = "libssh")]
+#[cfg_attr(docsrs, doc(cfg(feature = "libssh")))]
+pub use self::backend::LibSshSession;
 pub use self::backend::SshSession;
 pub use self::key_method::{KeyMethod, MethodType};
 pub use self::scp::ScpFs;

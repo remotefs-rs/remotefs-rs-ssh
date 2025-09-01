@@ -85,13 +85,13 @@ remotefs-ssh = "^0.7"
 
 Each backend can be set as a feature in your `Cargo.toml`. Multiple backends can be enabled at the same time.
 
-- `libssh2`: The default backend, using the `libssh2` library for SSH connections.
 - `libssh`: An alternative backend, using the `libssh` library for SSH connections.
+- `libssh2`: The default backend, using the `libssh2` library for SSH connections.
 
 Each backend can be built with the vendored version, using the vendored feature instead:
 
-- `libssh2-vendored`: Build the `libssh2` backend with the vendored version of the library.
 - `libssh-vendored`: Build the `libssh` backend with the vendored version of the library.
+- `libssh2-vendored`: Build the `libssh2` backend with the vendored version of the library.
 
 If the vendored feature is **NOT** provided, you will need to have the corresponding system libraries installed on your machine.
 
@@ -158,7 +158,7 @@ Please follow [our contributing guidelines](CONTRIBUTING.md)
 
 ## Changelog ⏳
 
-View remotefs' changelog [HERE](CHANGELOG.md)
+View remotefs-ssh changelog [HERE](CHANGELOG.md)
 
 ---
 

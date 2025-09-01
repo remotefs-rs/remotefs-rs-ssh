@@ -1,6 +1,10 @@
 //! Defines the main trait for SSH Backends to be used with the clients and the backend implementations
 //! to support different SSH libraries (e.g. libssh2, libssh)
 
+#[cfg(feature = "libssh")]
+#[cfg_attr(docsrs, doc(cfg(feature = "libssh")))]
+mod libssh;
+
 #[cfg(feature = "libssh2")]
 #[cfg_attr(docsrs, doc(cfg(feature = "libssh2")))]
 mod libssh2;
@@ -11,6 +15,9 @@ use std::path::{Path, PathBuf};
 use remotefs::fs::{Metadata, ReadStream, WriteStream};
 use remotefs::{File, RemoteResult};
 
+#[cfg(feature = "libssh")]
+#[cfg_attr(docsrs, doc(cfg(feature = "libssh")))]
+pub use self::libssh::LibSshSession;
 #[cfg(feature = "libssh2")]
 #[cfg_attr(docsrs, doc(cfg(feature = "libssh2")))]
 pub use self::libssh2::LibSsh2Session;

@@ -1,3 +1,4 @@
 [alias]
-lint = "clippy --features libssh2 -- -Dwarnings"
-test-all = "test --features libssh2"
+lint = "clippy --features libssh,libssh2 -- -Dwarnings"
+test-libssh = "test --features libssh"
+test-libssh2 = "test --features libssh2"

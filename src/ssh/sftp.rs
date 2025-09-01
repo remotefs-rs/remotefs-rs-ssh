@@ -41,6 +41,20 @@ impl SftpFs<super::backend::LibSsh2Session> {
     }
 }
 
+#[cfg(feature = "libssh")]
+#[cfg_attr(docsrs, doc(cfg(feature = "libssh")))]
+impl SftpFs<super::backend::LibSshSession> {
+    /// Constructs a new [`SftpFs`] instance with the `libssh` backend.
+    pub fn libssh(opts: SshOpts) -> Self {
+        Self {
+            session: None,
+            sftp: None,
+            wrkdir: PathBuf::from("/"),
+            opts,
+        }
+    }
+}
+
 impl<S> SftpFs<S>
 where
     S: SshSession,
