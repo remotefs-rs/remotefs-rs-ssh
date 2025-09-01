@@ -91,6 +91,7 @@ pub trait Sftp {
         T: AsRef<Path>;
 
     /// Resolve the real path for `path`.
+    #[allow(dead_code)]
     fn realpath(&self, path: &Path) -> RemoteResult<PathBuf>;
 
     /// Renames a file from `src` to `dest`.

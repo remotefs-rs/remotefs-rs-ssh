@@ -50,3 +50,9 @@ rustdoc-args = ["--cfg", "docsrs"]
 [[bench]]
 name = "libssh2"
 harness = false
+required-features = ["libssh2"]
+
+[[bench]]
+name = "libssh"
+harness = false
+required-features = ["libssh"]
