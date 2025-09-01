@@ -650,10 +650,10 @@ fn authenticate(session: &mut libssh_rs::Session, opts: &SshOpts) -> RemoteResul
         }
     }
 
-    return Err(RemoteError::new_ex(
+    Err(RemoteError::new_ex(
         RemoteErrorType::AuthenticationFailed,
         "no supported authentication method found",
-    ));
+    ))
 }
 
 fn key_storage_auth(session: &mut libssh_rs::Session, opts: &SshOpts) -> RemoteResult<()> {
@@ -665,7 +665,7 @@ fn key_storage_auth(session: &mut libssh_rs::Session, opts: &SshOpts) -> RemoteR
     };
 
     let Some(priv_key_path) =
-        key_storage.resolve(&opts.host, &opts.username.as_deref().unwrap_or_default())
+        key_storage.resolve(&opts.host, opts.username.as_deref().unwrap_or_default())
     else {
         return Err(RemoteError::new_ex(
             RemoteErrorType::AuthenticationFailed,

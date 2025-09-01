@@ -10,7 +10,7 @@
 
 <p align="center">~ Remotefs SSH client ~</p>
 
-<p align="center">Developed by <a href="https://veeso.github.io/" target="_blank">@veeso</a></p>
+<p align="center">Developed by <a href="https://veeso.me/" target="_blank">@veeso</a></p>
 <p align="center">Current version: 0.7.0 (16/08/2025)</p>
 
 <p align="center">
@@ -41,9 +41,9 @@
   /></a>
 </p>
 <p align="center">
-  <a href="https://github.com/remotefs-rs/remotefs-rs-ssh/actions"
+  <a href="https://github.com/remotefs-rs/remotefs-rs-ssh/actions/workflows/linux.yml"
     ><img
-      src="https://github.com/remotefs-rs/remotefs-rs-ssh/workflows/Linux/badge.svg"
+      src="https://github.com/remotefs-rs/remotefs-rs-ssh/actions/workflows/test.yml/badge.svg"
       alt="Linux CI"
   /></a>
   <a href="https://coveralls.io/github/remotefs-rs/remotefs-rs-ssh"
@@ -101,6 +101,36 @@ these features are supported:
 
 - `find`: enable `find()` method on client (*enabled by default*)
 - `no-log`: disable logging. By default, this library will log via the `log` crate.
+
+## Ssh client
+
+Here is a basic usage example, with the `Sftp` client, which is very similiar to the `Scp` client.
+
+Both the `SftpFs` and `ScpFs` constructors are respectively `SftpFs::libssh2` and `SftpFs::libssh` accordingly to the enabled backends.
+
+```rust,ignore
+// import remotefs trait and client
+use remotefs::RemoteFs;
+use remotefs_ssh::{SshConfigParseRule, SftpFs, SshOpts};
+use std::path::Path;
+
+let opts = SshOpts::new("127.0.0.1")
+    .port(22)
+    .username("test")
+    .password("password")
+    .config_file(Path::new("/home/cvisintin/.ssh/config"), ParseRule::STRICT);
+
+let mut client = SftpFs::libssh2(opts);
+
+// connect
+assert!(client.connect().is_ok());
+// get working directory
+println!("Wrkdir: {}", client.pwd().ok().unwrap().display());
+// change working directory
+assert!(client.change_dir(Path::new("/tmp")).is_ok());
+// disconnect
+assert!(client.disconnect().is_ok());
+```
 
 ---
 

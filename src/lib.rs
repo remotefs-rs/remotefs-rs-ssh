@@ -15,7 +15,6 @@
 //! remotefs-ssh = "^0.7"
 //! ```
 //!
-//! > ![NOTE]
 //! > The library supports multiple ssh backends.
 //! > Currently `libssh2` and `libssh` are supported.
 //! >
@@ -25,13 +24,13 @@
 //!
 //! Each backend can be set as a feature in your `Cargo.toml`. Multiple backends can be enabled at the same time.
 //!
-//! - `libssh2`: The default backend, using the `libssh2` library for SSH connections.
 //! - `libssh`: An alternative backend, using the `libssh` library for SSH connections.
+//! - `libssh2`: The default backend, using the `libssh2` library for SSH connections.
 //!
 //! Each backend can be built with the vendored version, using the vendored feature instead:
 //!
-//! - `libssh2-vendored`: Build the `libssh2` backend with the vendored version of the library.
 //! - `libssh-vendored`: Build the `libssh` backend with the vendored version of the library.
+//! - `libssh2-vendored`: Build the `libssh2` backend with the vendored version of the library.
 //!
 //! If the vendored feature is **NOT** provided, you will need to have the corresponding system libraries installed on your machine.
 //!
@@ -42,23 +41,26 @@
 //! - `find`: enable `find()` method on client (*enabled by default*)
 //! - `no-log`: disable logging. By default, this library will log via the `log` crate.
 //!
-//! ### Ssh client
+//! ## Example
 //!
 //! Here is a basic usage example, with the `Sftp` client, which is very similiar to the `Scp` client.
 //!
-//! ```rust,ignore
+//! Both the [`SftpFs`] and [`ScpFs`] constructors are respectively [`SftpFs::libssh2`] and [`SftpFs::libssh`] accordingly to the
+//! enabled backends.
 //!
+//! ```rust,ignore
 //! // import remotefs trait and client
 //! use remotefs::RemoteFs;
 //! use remotefs_ssh::{SshConfigParseRule, SftpFs, SshOpts};
 //! use std::path::Path;
 //!
-//! let mut client: SftpFs = SshOpts::new("127.0.0.1")
+//! let opts = SshOpts::new("127.0.0.1")
 //!     .port(22)
 //!     .username("test")
 //!     .password("password")
-//!     .config_file(Path::new("/home/cvisintin/.ssh/config"), ParseRule::STRICT)
-//!     .into();
+//!     .config_file(Path::new("/home/cvisintin/.ssh/config"), ParseRule::STRICT);
+//!
+//! let mut client = SftpFs::libssh2(opts);
 //!
 //! // connect
 //! assert!(client.connect().is_ok());
