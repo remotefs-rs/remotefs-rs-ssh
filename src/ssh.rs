@@ -105,6 +105,9 @@ pub struct SshOpts {
     parse_rules: ParseRule,
     /// Ssh agent configuration for authentication
     ssh_agent_identity: Option<SshAgentIdentity>,
+    /// do not use any shell command when doing SCP operations
+    /// to make sure to be compatible with non unix systems
+    pure_scp: bool,
 }
 
 impl SshOpts {
@@ -125,6 +128,7 @@ impl SshOpts {
             methods: Vec::default(),
             parse_rules: ParseRule::STRICT,
             ssh_agent_identity: None,
+            pure_scp: false,
         }
     }
 
@@ -163,6 +167,13 @@ impl SshOpts {
     /// Otherwise the provided public key will be used
     pub fn ssh_agent_identity(mut self, ssh_agent_identity: Option<SshAgentIdentity>) -> Self {
         self.ssh_agent_identity = ssh_agent_identity;
+        self
+    }
+
+    /// do not use any shell command when doing SCP operations
+    /// to make sure to be compatible with non unix systems
+    pub fn pure_scp(mut self, pure_scp: bool) -> Self {
+        self.pure_scp = pure_scp;
         self
     }
 
