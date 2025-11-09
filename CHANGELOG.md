@@ -1,6 +1,7 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [0.7.1](#071)
   - [0.7.0](#070)
   - [0.6.4](#064)
   - [0.6.3](#063)
@@ -22,6 +23,13 @@
   - [0.1.0](#010)
 
 ---
+
+## 0.7.1
+
+Released on 09/11/2025
+
+- MSRV bumped to 1.88.0
+- Fixed compatibility with hosts running with fish set as default shell
 
 ## 0.7.0
 
