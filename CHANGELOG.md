@@ -1,6 +1,7 @@
 # Changelog
 
 - [Changelog](#changelog)
+  - [0.7.2](#072)
   - [0.7.1](#071)
   - [0.7.0](#070)
   - [0.6.4](#064)
@@ -23,6 +24,12 @@
   - [0.1.0](#010)
 
 ---
+
+## 0.7.2
+
+Released on 31/01/2026
+
+- `ssh2-config` bumped to `0.7.0`
 
 ## 0.7.1
 
@@ -55,13 +62,15 @@ Released on 15/08/2025
 Released on 21/07/2025
 
 - Fixed issue with SSH authentication:
-  - if the key is resolved and it fails to authenticate, if a password is provided, try to authenticate with the password before returning an error.
+  - if the key is resolved and it fails to authenticate, if a password is provided, try to authenticate with the
+    password before returning an error.
 
 ## 0.6.2
 
 Released on 16/05/2025
 
-- [Issue 9](https://github.com/remotefs-rs/remotefs-rs-ssh/pull/9): fixed label regex groups and add support for parsing ls output on systems that include SELinux labels, POSIX ACLs, and extended attributes
+- [Issue 9](https://github.com/remotefs-rs/remotefs-rs-ssh/pull/9): fixed label regex groups and add support for parsing
+  ls output on systems that include SELinux labels, POSIX ACLs, and extended attributes
 
 ## 0.6.1
 
@@ -119,7 +128,8 @@ Released on 06/07/2023
 
 Released on 09/05/2023
 
-- `SshOpts::config_file` now requires `SshConfigParseRule` as argument to specify the rules to parse the configuration file
+- `SshOpts::config_file` now requires `SshConfigParseRule` as argument to specify the rules to parse the configuration
+  file
 
 ## 0.1.6
 
