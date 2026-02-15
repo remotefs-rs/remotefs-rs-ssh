@@ -242,11 +242,13 @@ where
             "Connection established: {}",
             banner.as_deref().unwrap_or("")
         );
-        // Get working directory
-        debug!("Getting working directory...");
-        self.wrkdir = session
-            .cmd("pwd")
-            .map(|(_rc, output)| PathBuf::from(output.as_str().trim()))?;
+        if !self.opts.pure_scp {
+            // Get working directory
+            debug!("Getting working directory...");
+            self.wrkdir = session
+                .cmd("pwd")
+                .map(|(_rc, output)| PathBuf::from(output.as_str().trim()))?;
+        }
         // Set session
         self.session = Some(session);
         info!(
@@ -667,9 +669,11 @@ where
         self.check_connection()?;
         let path = path_utils::absolutize(self.wrkdir.as_path(), path);
         debug!("Opening file {} for read", path.display());
-        // check if file exists
-        if !self.exists(path.as_path()).ok().unwrap_or(false) {
-            return Err(RemoteError::new(RemoteErrorType::NoSuchFileOrDirectory));
+        if !self.opts.pure_scp {
+            // check if file exists
+            if !self.exists(path.as_path()).ok().unwrap_or(false) {
+                return Err(RemoteError::new(RemoteErrorType::NoSuchFileOrDirectory));
+            }
         }
         trace!("blocked channel");
         match self.session.as_mut().unwrap().scp_recv(path.as_path()) {
