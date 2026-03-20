@@ -1,6 +1,6 @@
 name: test
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 env:
   CARGO_TERM_COLOR: always
@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        features: [libssh, libssh2]
+        features: [ libssh, libssh2, russh ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
