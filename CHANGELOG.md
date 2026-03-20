@@ -1,29 +1,52 @@
 # Changelog
 
-- [Changelog](#changelog)
-  - [0.7.2](#072)
-  - [0.7.1](#071)
-  - [0.7.0](#070)
-  - [0.6.4](#064)
-  - [0.6.3](#063)
-  - [0.6.2](#062)
-  - [0.6.1](#061)
-  - [0.6.0](#060)
-  - [0.5.0](#050)
-  - [0.4.1](#041)
-  - [0.4.0](#040)
-  - [0.3.1](#031)
-  - [0.3.0](#030)
-  - [0.2.1](#021)
-  - [0.2.0](#020)
-  - [0.1.6](#016)
-  - [0.1.5](#015)
-  - [0.1.3](#013)
-  - [0.1.2](#012)
-  - [0.1.1](#011)
-  - [0.1.0](#010)
+## 0.8.0
 
----
+Released on 2026-03-20
+
+### Added
+
+- add russh pure-Rust SSH backend
+  > Add a new `russh` feature providing a pure-Rust SSH backend using the
+  > russh, russh-keys, and russh-sftp crates. This eliminates the need for
+  > system C libraries (libssh2/libssh) when the russh backend is selected.
+  >
+  > The implementation includes:
+  > - SshSession and Sftp trait implementations for russh
+  > - SCP send/recv over russh channels with proper ACK handling
+  > - SFTP via russh-sftp
+  > - Authentication: password, public key, and SSH agent
+  > - Algorithm preference negotiation from SSH config
+  > - NoCheckServerKey default handler for server key verification
+  > - Benchmarks, examples, and full test coverage
+
+### CI
+
+- benchmark workflow- run test workflow once on pr
+
+### Miscellaneous
+
+- claude.md
+
+### Performance
+
+- buffer entire file in libssh SFTP reads to reduce round-trips
+  > Replace the streaming SftpFileReader (one SFTP round-trip per read()
+  > call) with a buffered approach that reads the entire file into memory
+  > using a 256 KiB buffer before returning. This pre-fetches the file data
+  > in open_read() rather than deferring reads to the caller's smaller
+  > 64 KiB buffer loop, reducing total round-trips.
+  >
+  > Unlike the russh backend which uses true concurrent pipelining (multiple
+  > file handles reading different chunks via tokio::spawn), this approach
+  > is still sequential due to libssh-rs serializing all operations through
+  > a session-level mutex. True pipelining would require the AIO FFI
+  > (sftp_aio_begin_read/sftp_aio_wait_read) which libssh-rs does not
+  > expose at the safe API level.
+
+### Build
+
+- ssh2-config 0.7- 0.7.2
 
 ## 0.7.2
 
