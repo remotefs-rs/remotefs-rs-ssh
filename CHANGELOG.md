@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.8.1
+
+Released on 2026-03-21
+
+### Performance
+
+- **russh:** streaming PipelinedSftpReader with bounded pre-fetch
+  > Replace the fully-buffered pipelined_sftp_read with a streaming
+  > PipelinedSftpReader struct that fetches 16 MiB batches (4 concurrent
+  > 4 MiB chunks) and pre-fetches up to 2 batches ahead. This caps memory
+  > at ~48 MiB regardless of file size while keeping pipelined throughput.
+  >
+  > Adds a 20 MiB byte-order test to verify data arrives sequentially.
+
 ## 0.8.0
 
 Released on 2026-03-20
