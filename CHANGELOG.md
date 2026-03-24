@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.8.2
+
+Released on 2026-03-24
+
+### Fixed
+
+- **sftp:** eliminate shell command dependency from SFTP client
+  > Replace shell commands (pwd, rm -rf, cp -rf) with pure SFTP protocol
+  > operations so the SFTP client no longer requires shell access on the
+  > remote server.
+  >
+  > - Use sftp.realpath(".") instead of cmd("pwd") for working directory
+  > - Implement recursive remove_dir_all via readdir/unlink/rmdir
+  > - Implement recursive copy via readdir/mkdir/open_read/open_write
+  > - Fix libssh realpath to use canonicalize (SSH_FXP_REALPATH) instead
+      >   of read_link (SSH_FXP_READLINK)
+  > - Fix libssh symlink resolution in readdir to use read_link directly
+
 ## 0.8.1
 
 Released on 2026-03-21
