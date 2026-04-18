@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.8.3
+
+Released on 2026-04-18
+
+### Fixed
+
+- **scp:** mtime wrongly treated as UTC; use `stat` for timezone-free epoch
+  > SCP listings parsed the `ls -l` timestamp as if it were UTC, so clients
+  > rendering via `DateTime<Local>` displayed a UTC wall clock instead of
+  > the server's local time. Override the `ls`-parsed mtime with the Unix
+  > epoch obtained from `stat -c %Y` (GNU) or `stat -f %m` (BSD), probed
+  > once per session and cached. Falls back to the `ls` parser on hosts
+  > where neither flavor is available. Closes
+  > [veeso/termscp#416](https://github.com/veeso/termscp/issues/416).
+
 ## 0.8.2
 
 Released on 2026-03-24
