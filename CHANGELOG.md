@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.8.5
+
+### Fixed
+
+- **russh:** SFTP handle leak exhausting the server's open-handle limit
+  > russh-sftp's `File::drop` closes handles via `close_nowait`, which frees
+  > the handle server-side but never decrements the client's open-handle
+  > counter. Reads (one handle per chunk) and writes (one handle per upload)
+  > relied on `Drop`, so the counter climbed monotonically until the
+  > negotiated limit was reached, failing later operations with
+  > `Limit exceeded: Handle limit reached`. Both paths now close handles via
+  > an awaited `shutdown`, which decrements the counter.
+
 ## 0.8.4
 
 Released on 2026-06-08
