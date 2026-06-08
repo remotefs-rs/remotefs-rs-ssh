@@ -4,6 +4,13 @@
 
 ### Fixed
 
+- **russh:** SSH agent authentication was silently ignored
+  > The russh backend never honored `SshOpts::ssh_agent_identity`, so users
+  > whose keys live only in an ssh-agent (common on macOS) could not
+  > authenticate, unlike the libssh2/libssh backends. The backend now
+  > authenticates via the agent first (agent → key → password), matching the
+  > other backends, requesting `rsa-sha2-256/512` signatures for RSA
+  > identities. Unix only.
 - **russh:** public key authentication failing against modern OpenSSH servers
   > russh maps a `None` hash algorithm to the legacy `ssh-rsa` (SHA-1)
   > signature, which OpenSSH 8.8+ rejects by default. RSA key authentication
