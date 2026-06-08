@@ -4,6 +4,12 @@
 
 ### Fixed
 
+- **libssh:** `symlink` created the link with the source and target paths swapped
+  > The libssh backend passed `path`/`target` to `libssh-rs`'s
+  > `symlink(target, dest)` in the wrong order. OpenSSH's older sftp-server
+  > reversed the `SSH_FXP_SYMLINK` arguments, which cancelled the mistake; the
+  > 10.2 server bumped for the russh auth tests no longer does, so symlinks were
+  > created at the wrong path. The arguments are now ordered correctly.
 - **russh:** SSH agent authentication was silently ignored
   > The russh backend never honored `SshOpts::ssh_agent_identity`, so users
   > whose keys live only in an ssh-agent (common on macOS) could not
