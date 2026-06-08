@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.4
+
+Released on 2026-06-08
+
+### Fixed
+
+- bump russh 0.6.1
+
 ## 0.8.3
 
 Released on 2026-04-18
