@@ -4,6 +4,15 @@
 
 ### Fixed
 
+- **russh:** public key authentication failing against modern OpenSSH servers
+  > russh maps a `None` hash algorithm to the legacy `ssh-rsa` (SHA-1)
+  > signature, which OpenSSH 8.8+ rejects by default. RSA key authentication
+  > therefore failed with `public key authentication failed` for users on
+  > modern servers (the libssh2/libssh backends negotiate `rsa-sha2-256/512`
+  > transparently). RSA keys now attempt `rsa-sha2-512`, then `rsa-sha2-256`,
+  > then legacy `ssh-rsa`; non-RSA keys are unaffected. The test container was
+  > bumped from OpenSSH 8.6 (which still accepts SHA-1, masking the bug) to
+  > 10.2 so the suite exercises modern signature negotiation.
 - **russh:** SFTP handle leak exhausting the server's open-handle limit
   > russh-sftp's `File::drop` closes handles via `close_nowait`, which frees
   > the handle server-side but never decrements the client's open-handle
