@@ -73,7 +73,9 @@ Released on 2026-03-24
   > - Implement recursive remove_dir_all via readdir/unlink/rmdir
   > - Implement recursive copy via readdir/mkdir/open_read/open_write
   > - Fix libssh realpath to use canonicalize (SSH_FXP_REALPATH) instead
-      >   of read_link (SSH_FXP_READLINK)
+  >
+  >> of read_link (SSH_FXP_READLINK)
+  >
   > - Fix libssh symlink resolution in readdir to use read_link directly
 
 ## 0.8.1
@@ -102,6 +104,7 @@ Released on 2026-03-20
   > system C libraries (libssh2/libssh) when the russh backend is selected.
   >
   > The implementation includes:
+  >
   > - SshSession and Sftp trait implementations for russh
   > - SCP send/recv over russh channels with proper ACK handling
   > - SFTP via russh-sftp
