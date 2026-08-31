@@ -1,27 +1,24 @@
-name: bench
+name: Bench
 
 on:
   workflow_dispatch:
 
-env:
-  CARGO_TERM_COLOR: always
+permissions:
+  contents: read
 
 jobs:
   bench:
     name: Bench (${{ matrix.features }})
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         features: [libssh, libssh2, russh]
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Setup rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          toolchain: stable
-
+          persist-credentials: false
+      - name: Install just
+        uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4
       - name: Run benchmarks
-        run: cargo bench --features ${{ matrix.features }} --bench ${{ matrix.features }}
+        run: just bench ${{ matrix.features }}
