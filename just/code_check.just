@@ -15,11 +15,6 @@ fmt_check args="":
 clippy args="":
   cargo clippy --all-targets --all-features {{ args }}
 
-# Run Clippy for every target with a single backend feature.
-[group('code-check')]
-clippy_feature feature args="":
-  cargo clippy --all-targets --no-default-features --features find,{{ feature }} {{ args }}
-
 # Build Rust documentation and deny warnings.
 [group('code-check')]
 doc args="":
