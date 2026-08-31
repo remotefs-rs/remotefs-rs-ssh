@@ -10,7 +10,13 @@ feature-depth = 1
 db-urls = ["https://github.com/rustsec/advisory-db"]
 yanked = "deny"
 unmaintained = "all"
-ignore = []
+ignore = [
+  # rsa: Marvin timing side-channel (RUSTSEC-2023-0071). Pulled transitively
+  # by our direct `russh` dependency (via russh -> ssh-key); no patched rsa
+  # release exists upstream. Re-evaluate when russh or RustCrypto/rsa ships a
+  # fix.
+  "RUSTSEC-2023-0071",
+]
 
 [licenses]
 unused-allowed-license = "allow"
