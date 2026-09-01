@@ -1,13 +1,13 @@
 # Run all unit, integration, binary, and documentation tests.
 [group('test')]
 test args="":
-  cargo test --all-targets {{ args }}
+  cargo test --lib {{ args }}
   cargo test --doc {{ args }}
 
 # Generate an LCOV coverage report.
 [group('test')]
 coverage output="lcov.info" args="":
-  cargo llvm-cov --all-targets --lcov --output-path {{ output }} {{ args }}
+  cargo llvm-cov --lib --lcov --output-path {{ output }} {{ args }}
 
 # Run benchmarks for one backend feature.
 [group('test')]
