@@ -2,6 +2,38 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.9.0
+
+Released on 2026-09-01
+
+### Added
+
+- **ssh:** support connection attempts across backends
+- **ssh:** support bind address across backends
+- **ssh:** support bind interface across backends
+- **ssh:** support TCP keepalive across backends
+- **russh:** support SSH compression config
+- **russh:** support host key certificates
+- **ssh:** support public key authentication config
+- **ssh:** support accepted public key algorithms
+- **ssh:** support certificate files
+- **russh:** support CA signature algorithms
+- **russh:** support adding keys to agent
+- **ssh:** support proxy jump connections
+- **ssh:** support server alive intervals
+- **ssh:** support agent forwarding
+- **ssh:** support remote forwarding
+
+### Fixed
+
+- **libssh:** preserve explicit port over ssh config
+- **ssh:** honor connect timeout across backends
+- **libssh2:** honor configured identity files
+- **ssh:** use resolved endpoint for libssh
+- **ssh:** harden timeouts and forwarded channels
+
+> Treat zero connection timeouts as disabled across libssh and russh, including ProxyJump handshakes. Bound forwarded channels to prevent resource exhaustion and document the supported SSH configuration options.
+
 ## 0.8.6
 
 Released on 2026-08-31
