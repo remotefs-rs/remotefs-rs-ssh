@@ -7,3 +7,4 @@ changelog_preview version:
 [group('changelog')]
 changelog version:
   git-cliff --config cliff.toml --tag "v{{ version }}" --output CHANGELOG.md
+  just fmt CHANGELOG.md
