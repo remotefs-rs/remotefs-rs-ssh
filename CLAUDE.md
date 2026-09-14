@@ -59,10 +59,14 @@ client implementation providing SCP/SFTP access over SSH. It is a
 library-only crate (`src/lib.rs`, crate name `remotefs_ssh`) — there is no
 binary target.
 
-- **Backend abstraction.** `src/ssh/backend.rs` defines the common trait and
-  gates three interchangeable SSH implementations behind Cargo features:
-  `libssh2` (default, C library), `libssh` (C library, not `Sync`), and
-  `russh` (pure Rust, async under the hood, requires `tokio`). Each backend
+- **Backend abstraction.** `src/ssh/backend.rs` defines the blocking
+  `SshSession`/`Sftp` traits (used by `SftpFs`/`ScpFs` for `libssh2` and
+  `libssh`, both `Send + Sync`). The `russh` backend is native async:
+  `RusshSession` drives `RusshSftpFs` and `RusshScpFs`
+  (`remotefs::AsyncRemoteFs`), with `into_blocking(handle)` returning a
+  `remotefs::adapters::blocking::BlockOn` wrapper that requires a multi-thread
+  Tokio runtime. SCP shell commands and parsers live in
+  `src/ssh/scp/shell.rs` and are shared by both SCP clients. Each backend
   lives in its own submodule and is `#[cfg(feature = "...")]`-gated end to
   end, including its examples (`examples/scp.rs`, `examples/scp-russh.rs`,
   `examples/sftp.rs`, `examples/sftp-russh.rs`) and benches (`benches/`).
@@ -94,7 +98,7 @@ binary target.
 
 - Toolchain is pinned to Rust 1.98.0, edition 2024 (`rust-toolchain.toml`).
   `package.rust-version` in `Cargo.toml` is the crate's published MSRV
-  (currently 1.88.0) and is intentionally lower than the pinned dev
+  (currently 1.89.0) and is intentionally lower than the pinned dev
   toolchain — do not "sync" the two.
 - Use `module_name.rs`; never `mod.rs`.
 - Public library items need canonical rustdoc, including a runnable example.

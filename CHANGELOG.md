@@ -2,9 +2,9 @@
 
 All notable changes to this project are documented in this file.
 
-## 0.9.0
+## 1.0.0
 
-Released on 2026-09-01
+Released on 2026-09-14
 
 ### Added
 
