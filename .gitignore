@@ -27,3 +27,6 @@ dist/pkgs/arch/*.tar.gz
 .idea/
 .claude/
 
+# Local planning state (never committed)
+.superpowers/
+docs/superpowers/

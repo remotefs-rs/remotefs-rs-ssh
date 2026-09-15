@@ -8,6 +8,11 @@ build args="":
 release args="":
   cargo build --all-targets --release {{ args }}
 
+# Update one Cargo dependency.
+[group('build')]
+cargo_update package="remotefs":
+  cargo update -p {{ package }}
+
 # Remove Cargo build artifacts.
 [group('build')]
 [confirm("Are you sure you want to clean the build artifacts?")]

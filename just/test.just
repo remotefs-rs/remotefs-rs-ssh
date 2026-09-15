@@ -13,3 +13,8 @@ coverage output="lcov.info" args="":
 [group('test')]
 bench feature="libssh2":
   cargo bench --bench {{ feature }} --features {{ feature }}
+
+# Check that one backend benchmark compiles without running it.
+[group('test')]
+bench_check feature="libssh2":
+  cargo bench --bench {{ feature }} --features {{ feature }} --no-run
