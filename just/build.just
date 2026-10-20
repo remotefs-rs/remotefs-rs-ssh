@@ -3,6 +3,11 @@
 build args="":
   cargo build --all-targets {{ args }}
 
+# Build every target with all features enabled in debug mode.
+[group('build')]
+build_all args="":
+  cargo build --features libssh,libssh2,russh --all-targets {{ args }}
+
 # Build every target in release mode.
 [group('build')]
 release args="":
