@@ -2,9 +2,45 @@
 
 All notable changes to this project are documented in this file.
 
+## 1.1.0
+
+Released on 2026-10-20
+
+### Added
+
+- **ssh:** add home_dir option to SshOpts
+
+> Pass the home directory to the ssh2-config parser so that `~` and relative `Include` paths resolve against it. When unset, ssh2-config falls back to `dirs::home_dir`.
+
+### Build
+
+- bump dependencies
+
+> bump `russh` to `3`, bump `ssh2-config` to `0.9`
+
 ## 1.0.0
 
 Released on 2026-09-15
+
+### Breaking changes
+
+- migrate to remotefs 1 (#26)
+
+> migrate SftpFs and ScpFs to the remotefs 1 blocking contract and add the native asynchronous RusshSftpFs and RusshScpFs clients with BlockOn wrappers. Every path must be absolute, pwd and change_dir are removed, operations take a shared reference, connect returns unit and the server banner moves to SftpFs::banner and ScpFs::banner, transfers return owned streams that must be finished, SCP create requires a size hint, and the russh backend no longer takes a Tokio runtime.
+
+- chore: release 1.0
+
+### Added
+
+- Breaking: migrate to remotefs 1 (#26)
+
+> - feat!: migrate to remotefs 1
+>
+> Migrate the blocking libssh2 and libssh clients to the remotefs 1 contract and add native asynchronous russh SFTP and SCP clients with blocking adapters.
+
+## 0.9.0
+
+Released on 2026-09-01
 
 ### Added
 
