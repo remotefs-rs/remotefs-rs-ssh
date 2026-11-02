@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented in this file.
 
+## 1.1.1
+
+Released on 2026-11-02
+
+### Fixed
+
+- **ssh:** use forward slashes in remote entry paths on windows
+
+> Since the move to remotefs 1, remote entry paths were built with the
+> platform path join. On Windows that inserted a backslash, so listing /srv
+> returned entries named srv\files that could not be opened. SCP listings,
+> batched stat, SFTP directory listings on every backend and SFTP recursive
+> copy now build remote paths with a helper that normalizes the directory
+> with path-slash and appends the entry name after a forward slash.
+
 ## 1.1.0
 
 Released on 2026-10-20
