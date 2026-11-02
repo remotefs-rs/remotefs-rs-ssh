@@ -4,6 +4,12 @@ test args="":
   cargo test --lib {{ args }}
   cargo test --doc {{ args }}
 
+# Run the unit tests for remote path building, which need no Docker container.
+# Also run on Windows, where `\` is a local path separator.
+[group('test')]
+test_remote_paths args="":
+  cargo test --lib --no-default-features --features find,russh {{ args }} -- utils:: ssh::scp::shell::
+
 # Generate an LCOV coverage report.
 [group('test')]
 coverage output="lcov.info" args="":
