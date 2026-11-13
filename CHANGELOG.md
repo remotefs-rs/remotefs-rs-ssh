@@ -2,6 +2,33 @@
 
 All notable changes to this project are documented in this file.
 
+## 1.1.2
+
+Released on 2026-11-13
+
+### Fixed
+
+- **ssh:** accept backslash separators in remote paths
+
+> Since 1.1.1 listed entries use forward slashes, but paths given to a
+> client were still sent to the server as is. On Windows, a path built with
+> Path::join such as /home/deck/.steam/steam\userdata reached the server with
+> a literal backslash, so list_dir and every other operation failed on SCP
+> and on SFTP over russh and libssh. Every client now treats a backslash in
+> the paths it is given as a separator, on every platform as the SMB client
+> does, and sends it as a forward slash. Remote names containing a literal
+> backslash can no longer be reached.
+
+### Performance
+
+- **russh:** use `try_update` instead of `fetch_update`
+
+> also bumps MSRV to 1.95.0
+
+### Build
+
+- bump rust 1.100.0
+
 ## 1.1.1
 
 Released on 2026-11-02
