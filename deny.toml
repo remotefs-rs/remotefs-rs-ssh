@@ -16,6 +16,10 @@ ignore = [
   # release exists upstream. Re-evaluate when russh or RustCrypto/rsa ships a
   # fix.
   "RUSTSEC-2023-0071",
+  # astral-tokio-tar: unmaintained (RUSTSEC-2026-0440), no safe upgrade. Dev
+  # dependency only, pulled by testcontainers for the container tests.
+  # Re-evaluate when testcontainers drops it or a maintained release ships.
+  "RUSTSEC-2026-0440",
 ]
 
 [licenses]
