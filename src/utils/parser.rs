@@ -5,8 +5,9 @@
 use std::collections::HashMap;
 use std::time::{Duration, SystemTime};
 
-use chrono::format::ParseError;
-use chrono::prelude::*;
+use jiff::Timestamp;
+use jiff::civil::{Date, DateTime, Time};
+use jiff::tz::TimeZone;
 
 use crate::utils::path as path_utils;
 
@@ -22,29 +23,28 @@ use crate::utils::path as path_utils;
 /// [`parse_stat_epoch`] (which consumes the timezone-free epoch emitted by
 /// `stat`) whenever available; this function is retained only as a fallback
 /// for shells/hosts where `stat` is unavailable.
-pub fn parse_lstime(tm: &str, fmt_year: &str, fmt_hours: &str) -> Result<SystemTime, ParseError> {
-    let datetime: NaiveDateTime = match NaiveDate::parse_from_str(tm, fmt_year) {
+pub fn parse_lstime(tm: &str, fmt_year: &str, fmt_hours: &str) -> Result<SystemTime, jiff::Error> {
+    let datetime: DateTime = match Date::strptime(fmt_year, tm) {
         Ok(date) => {
             // Case 2.
-            // Return NaiveDateTime from NaiveDate with time 00:00:00
-            date.and_hms_opt(0, 0, 0).unwrap()
+            // Return DateTime from Date with time 00:00:00
+            date.to_datetime(Time::midnight())
         }
         Err(_) => {
             // Might be case 1.
             // We need to add Current Year at the end of the string
-            let this_year: i32 = Utc::now().year();
+            let this_year = TimeZone::UTC.to_datetime(Timestamp::now()).year();
             let date_time_str: String = format!("{tm} {this_year}");
             // Now parse
-            NaiveDateTime::parse_from_str(
-                date_time_str.as_ref(),
-                format!("{fmt_hours} %Y").as_ref(),
-            )?
+            DateTime::strptime(format!("{fmt_hours} %Y"), date_time_str)?
         }
     };
     // Convert datetime to system time
+    let timestamp = TimeZone::UTC.to_timestamp(datetime)?;
     let sys_time: SystemTime = SystemTime::UNIX_EPOCH;
-    Ok(sys_time
-        .checked_add(Duration::from_secs(datetime.and_utc().timestamp() as u64))
+    Ok(u64::try_from(timestamp.as_second())
+        .ok()
+        .and_then(|secs| sys_time.checked_add(Duration::from_secs(secs)))
         .unwrap_or(SystemTime::UNIX_EPOCH))
 }
 
@@ -129,6 +129,34 @@ mod test {
         assert!(parse_lstime("Oma 31 2018", "%b %d %Y", "%b %d %H:%M").is_err());
         assert!(parse_lstime("Feb 31 2018", "%b %d %Y", "%b %d %H:%M").is_err());
         assert!(parse_lstime("Feb 15 25:32", "%b %d %Y", "%b %d %H:%M").is_err());
+    }
+
+    #[test]
+    fn should_parse_lstime_with_ls_padding() {
+        // `ls` pads single-digit days with a second space.
+        assert_eq!(
+            parse_lstime("Nov  5 2018", "%b %d %Y", "%b %d %H:%M")
+                .unwrap()
+                .duration_since(SystemTime::UNIX_EPOCH)
+                .unwrap(),
+            Duration::from_secs(1541376000)
+        );
+        // Single-digit hour and minute, as allowed by `LS_RE`.
+        assert_eq!(
+            fmt_time_utc(
+                parse_lstime("Nov  5 1:2", "%b %d %Y", "%b %d %H:%M").unwrap(),
+                "%m %d %H %M"
+            ),
+            "11 05 01 02"
+        );
+    }
+
+    #[test]
+    fn should_clamp_pre_epoch_lstime_to_unix_epoch() {
+        assert_eq!(
+            parse_lstime("Jan 1 1969", "%b %d %Y", "%b %d %H:%M").unwrap(),
+            SystemTime::UNIX_EPOCH
+        );
     }
 
     #[test]
