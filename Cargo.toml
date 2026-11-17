@@ -45,9 +45,9 @@ russh = [
 ]
 
 [dependencies]
-chrono = "0.4"
 futures-io = { version = "0.3", optional = true }
 if-addrs = { version = "0.15", optional = true }
+jiff = { version = "1", default-features = false, features = ["std"] }
 lazy-regex = "3"
 libssh-rs = { version = "0.3", optional = true }
 log = "0.4"
